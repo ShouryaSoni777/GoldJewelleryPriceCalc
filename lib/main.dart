@@ -59,27 +59,48 @@ class _MyHomePageState extends State<MyHomePage> {
   double weightInGrams = 0.0;
   int purity = 0;
   String totalPrice = "0";
+  int making = -1;
+  TextEditingController makingController = TextEditingController();
+  String font = "Quicksand";
+  double kFontSize = 13;
+  EdgeInsets padding = const EdgeInsets.all(05);
+  EdgeInsets margin = const EdgeInsets.only(top: 0, right: 30, left: 10);
+  double containerHeight = 55.0;
+  double containerWidth = 130.0;
+  double inputFieldHeight = 55.0;
+  double inputFieldWidth = 180.0;
+
+  BoxDecoration containerDecoration = BoxDecoration(
+      color: const Color(0xFFc62828), borderRadius: BorderRadius.circular(10));
 
   final InputDecoration _decorationGold = InputDecoration(
       focusedBorder: OutlineInputBorder(
           borderSide: const BorderSide(color: Color(0xFFc62828)),
           borderRadius: BorderRadius.circular(10)),
       hintText: "Fine Gold(999)",
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)));
+      border: OutlineInputBorder(borderSide: const BorderSide(color: Color(0xFFc62828)),borderRadius: BorderRadius.circular(10)));
 
   final InputDecoration _decorationWeight = InputDecoration(
       focusedBorder: OutlineInputBorder(
           borderSide: const BorderSide(color: Color(0xFFc62828)),
           borderRadius: BorderRadius.circular(10)),
-      hintText: "Weight (in grams)",
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)));
+      hintText: "Weight",
+      border: OutlineInputBorder(borderSide: const BorderSide(color: Color(0xFFc62828)),borderRadius: BorderRadius.circular(10)));
 
   final InputDecoration _decorationPurity = InputDecoration(
       focusedBorder: OutlineInputBorder(
           borderSide: const BorderSide(color: Color(0xFFc62828)),
           borderRadius: BorderRadius.circular(10)),
-      hintText: "Karat Index",
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)));
+      hintText: "Purity",
+      border: OutlineInputBorder(borderSide: const BorderSide(color: Color(0xFFc62828)),borderRadius: BorderRadius.circular(10)));
+
+  final InputDecoration _makingDecoration = InputDecoration(
+      focusedBorder: OutlineInputBorder(
+          borderSide: const BorderSide(color: Color(0xFFc62828)),
+          borderRadius: BorderRadius.circular(10)),
+      hintText: "Making",
+      
+      border: OutlineInputBorder(borderSide: const BorderSide(color: Color(0xFFc62828)),borderRadius: BorderRadius.circular(10)));
 
   updateTime() {
     setState(() {
@@ -102,8 +123,8 @@ class _MyHomePageState extends State<MyHomePage> {
             }));
   }
 
-  int calculatePrice(int goldFinePrice, double weight, int purity) {
-    double wastage = 10 / 100; // 10 percent.
+  int calculatePrice(int goldFinePrice, double weight, int purity, int making) {
+    double wastage = making / 100; // 10 percent.
     int makingCost = ((weight * wastage) * goldFinePrice).toInt();
     // print(purity);
     int basePrice = (((purity / 100) * goldFinePrice) * weight).toInt();
@@ -112,7 +133,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-
     void updateValues() {
       setState(() {
         if (textEditingController.text.isEmpty) {
@@ -121,9 +141,13 @@ class _MyHomePageState extends State<MyHomePage> {
         if (textEditingController.text.isNotEmpty) {
           textEditingControllerInput = textEditingController.text;
         }
-        if (purity != 0 && weightInGrams != 0.0 && fineGoldPrice != 0) {
+        if (purity != 0 &&
+            weightInGrams != 0.0 &&
+            fineGoldPrice != 0 &&
+            making != -1) {
           totalPrice =
-              calculatePrice(fineGoldPrice, weightInGrams, purity).toString();
+              calculatePrice(fineGoldPrice, weightInGrams, purity, making)
+                  .toString();
         } else {
           totalPrice = "0";
         }
@@ -140,7 +164,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 colors: [Color(0xFFfdd835), Color(0xFFf9a825)])),
         child: MaterialApp(
           theme: ThemeData(
-            fontFamily: "Quicksand",
+            fontFamily: font,
           ),
           debugShowCheckedModeBanner: false,
           title: "Gold jewellery Price Calculator",
@@ -181,8 +205,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                     children: [
                                       Container(
                                           alignment: Alignment.center,
-                                          padding:
-                                              const EdgeInsets.only(left: 0, top: 0),
+                                          padding: const EdgeInsets.only(
+                                              left: 0, top: 0),
                                           child: Text(
                                               "Gold Jewellery Price Calculator",
                                               style: TextStyle(
@@ -204,7 +228,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                     color: kColorRed,
                                                     borderRadius:
                                                         BorderRadius.circular(
-                                                            20)),
+                                                            10)),
                                                 alignment: Alignment.center,
                                                 width: 140,
                                                 height: 30,
@@ -222,7 +246,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                     color: kColorRed,
                                                     borderRadius:
                                                         BorderRadius.circular(
-                                                            20)),
+                                                            10)),
                                                 alignment: Alignment.center,
                                                 width: 140,
                                                 height: 30,
@@ -273,12 +297,12 @@ class _MyHomePageState extends State<MyHomePage> {
                                   alignment: Alignment.center,
                                   decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(5)),
-                                      child: Text("Jewellery Price",
-                                          style: TextStyle(
-                                            color: kColorRed,
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w600,
-                                          ))),
+                                  child: Text("Jewellery Price",
+                                      style: TextStyle(
+                                        color: kColorRed,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w600,
+                                      ))),
                               Container(
                                 padding: const EdgeInsets.only(top: 20),
                                 child: Row(
@@ -286,44 +310,28 @@ class _MyHomePageState extends State<MyHomePage> {
                                   children: [
                                     Container(
                                         alignment: Alignment.center,
-                                        height: 55,
-                                        width: 130,
-                                        decoration: BoxDecoration(
-                                            color: kColorRed,
-                                            borderRadius:
-                                                BorderRadius.circular(10)),
-                                        padding: const EdgeInsets.all(10),
-                                        margin: const EdgeInsets.only(
-                                            top: 0, right: 30, left: 10),
+                                        height: containerHeight,
+                                        width: containerWidth,
+                                        decoration: containerDecoration,
+                                        padding: padding,
+                                        margin: margin,
                                         child: RichText(
                                             text: TextSpan(
-                                                text: "Fine Gold(999)\n",
-                                                children: [
-                                                  TextSpan(
-                                                      text:
-                                                          "Price(per gram):",
-                                                      style: TextStyle(
-                                                          fontSize: 13,
-                                                          color: kColorWhite,
-                                                          fontFamily:
-                                                              "Quicksand"))
-                                                ],
-                                                style: const TextStyle(
-                                                    fontSize: 13,
+                                                text:
+                                                    "Fine Gold(999)\nPrice(per gram):",
+                                                style: TextStyle(
+                                                    fontSize: kFontSize,
                                                     color: Colors.white,
-                                                    fontFamily: "Quicksand")))),
+                                                    fontFamily: font)))),
                                     Container(
-                                      decoration: BoxDecoration(
-                                          color: kColorRed,
-                                          borderRadius:
-                                              BorderRadius.circular(10)),
-                                      height: 55,
-                                      width: 180,
+                                      decoration: containerDecoration,
+                                      height: inputFieldHeight,
+                                      width: inputFieldWidth,
                                       child: TextField(
                                           controller: textEditingController,
                                           onChanged: (value) {
                                             setState(() {
-                                              if(value == ""){
+                                              if (value == "") {
                                                 value = "0";
                                               }
                                               fineGoldPrice = int.parse(value);
@@ -349,43 +357,30 @@ class _MyHomePageState extends State<MyHomePage> {
                                   children: [
                                     Container(
                                         alignment: Alignment.center,
-                                        height: 55,
-                                        width: 130,
-                                        decoration: BoxDecoration(
-                                            color: kColorRed,
-                                            borderRadius:
-                                                BorderRadius.circular(10)),
-                                        padding: const EdgeInsets.all(10),
-                                        margin: const EdgeInsets.only(
-                                            top: 0, right: 30, left: 10),
-                                        child: RichText(
-                                          text: const TextSpan(
-                                            text: "Weight\n",
-                                            children: [
-                                              TextSpan(
-                                                style: TextStyle(fontSize: 13,fontFamily: "Quicksand"),
-                                                  text:
-                                                      "(in grams)")
-                                            ],
-                                            style: TextStyle(fontSize: 13,fontFamily: "Quicksand"),
-                                          ),
+                                        height: containerHeight,
+                                        width: containerWidth,
+                                        decoration: containerDecoration,
+                                        padding: padding,
+                                        margin: margin,
+                                        child: Text(
+                                          "Weight\n(in grams):\t\t\t\t\t\t\t\t\t",
+                                          style: TextStyle(
+                                              color: kColorWhite,
+                                              fontSize: kFontSize),
                                         )),
                                     Container(
-                                      decoration: BoxDecoration(
-                                          color: kColorRed,
-                                          borderRadius:
-                                              BorderRadius.circular(10)),
-                                      height: 55,
-                                      width: 180,
+                                      decoration: containerDecoration,
+                                      height: inputFieldHeight,
+                                      width: inputFieldWidth,
                                       child: TextField(
                                         controller: weightFieldController,
                                         onChanged: (value) => {
                                           setState(() {
-                                            if(value == ""){
+                                            if (value == "") {
                                               value = "0.0";
                                             }
-                                            if(value[0]=='.'){
-                                              value = "0"+value;
+                                            if (value[0] == '.') {
+                                              value = "0" + value;
                                             }
                                             weightInGrams = double.parse(value);
                                             updateValues();
@@ -410,40 +405,29 @@ class _MyHomePageState extends State<MyHomePage> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Container(
-                                        decoration: BoxDecoration(
-                                            color: kColorRed,
-                                            borderRadius:
-                                                BorderRadius.circular(10)),
+                                        decoration: containerDecoration,
                                         alignment: Alignment.center,
-                                        height: 55,
-                                        width: 130,
-                                        padding: const EdgeInsets.all(10),
-                                        margin: const EdgeInsets.only(
-                                            top: 0, right: 30, left: 10),
-                                        child: Text("Karat:",
+                                        height: containerHeight,
+                                        width: containerWidth,
+                                        padding: padding,
+                                        margin: margin,
+                                        child: Text("Purity\n(in percentage):",
                                             style: TextStyle(
-                                                fontSize: 15,
+                                                fontSize: kFontSize,
                                                 color: kColorWhite))),
                                     Container(
-                                      decoration: BoxDecoration(
-                                          color: kColorRed,
-                                          borderRadius:
-                                              BorderRadius.circular(10)),
+                                      decoration: containerDecoration,
                                       // margin: EdgeInsets.only(top: 20),
-                                      height: 55,
-                                      width: 180,
+                                      height: inputFieldHeight,
+                                      width: inputFieldWidth,
                                       child: TextField(
                                           controller: purityController,
                                           onChanged: (value) {
                                             if (value == "") {
                                               purity = 0;
                                             } else {
-                                              purity = ((100 / 24) *
-                                                          int.parse(value))
-                                                      .toInt() +
-                                                  1;
+                                              purity = int.parse(value);
                                             }
-
                                             updateValues();
                                           },
                                           keyboardType: TextInputType.number,
@@ -464,16 +448,56 @@ class _MyHomePageState extends State<MyHomePage> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Container(
+                                        decoration: containerDecoration,
+                                        alignment: Alignment.center,
+                                        height: containerHeight,
+                                        width: containerWidth,
+                                        padding: padding,
+                                        margin: margin,
+                                        child: Text("Making \n(in percentage):",
+                                            style: TextStyle(
+                                                fontSize: kFontSize,
+                                                color: kColorWhite))),
+                                    Container(
+                                      decoration: containerDecoration,
+                                      // margin: EdgeInsets.only(top: 20),
+                                      height: inputFieldHeight,
+                                      width: inputFieldWidth,
+                                      child: TextField(
+                                          controller: makingController,
+                                          onChanged: (value) {
+                                            if (value == "" || value == ",") {
+                                              value = "-1";
+                                              making = -1;
+                                            } else {
+                                              making = int.parse(value);
+                                            }
+                                            updateValues();
+                                          },
+                                          keyboardType: TextInputType.number,
+                                          cursorColor: _cursorColor,
+                                          textAlign: TextAlign.center,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 20,
+                                          ),
+                                          decoration: _makingDecoration),
+                                    )
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.only(top: 20),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
                                       alignment: Alignment.center,
-                                      height: 55,
-                                      width: 130,
-                                      padding: const EdgeInsets.all(10),
-                                      margin: const EdgeInsets.only(
-                                          top: 0, right: 30, left: 10),
-                                      decoration: BoxDecoration(
-                                          color: kColorRed,
-                                          borderRadius:
-                                              BorderRadius.circular(10)),
+                                      height: containerHeight,
+                                      width: containerWidth,
+                                      padding: padding,
+                                      margin: margin,
+                                      decoration: containerDecoration,
                                       child: Text(
                                         "Total Price: ",
                                         style: TextStyle(
@@ -481,12 +505,9 @@ class _MyHomePageState extends State<MyHomePage> {
                                       ),
                                     ),
                                     Container(
-                                        height: 55,
-                                        width: 180,
-                                        decoration: BoxDecoration(
-                                            color: kColorRed,
-                                            borderRadius:
-                                                BorderRadius.circular(10)),
+                                        height: inputFieldHeight,
+                                        width: inputFieldWidth,
+                                        decoration: containerDecoration,
                                         alignment: Alignment.center,
                                         child: Text(
                                           totalPrice,
@@ -499,15 +520,17 @@ class _MyHomePageState extends State<MyHomePage> {
                             ],
                           ),
                           Container(
-                            padding: const EdgeInsets.all(30),
-                            child: RichText(
-                              text: TextSpan(
+                              padding: const EdgeInsets.all(30),
+                              child: RichText(
+                                text: TextSpan(
                                   style: TextStyle(
-                                      color: kColorWhite, fontSize: 13,fontFamily: "Quicksand"),
+                                    color: kColorWhite,
+                                    fontSize: kFontSize,
+                                  ),
                                   text:
                                       "Note:- Above rates are without 3%GST\n",
-                            ),
-                          )),
+                                ),
+                              )),
                           Container(
                             height: 20,
                           )
