@@ -3,6 +3,7 @@ import 'dart:io' as io;
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:date_format/date_format.dart';
+import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -174,6 +175,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 builder: (context, snapshot) {
                   return Container(
                     height: MediaQuery.of(context).size.height,
+                    alignment: Alignment.center,
                     width: MediaQuery.of(context).size.width,
                     decoration: const BoxDecoration(
                         gradient: LinearGradient(
@@ -182,113 +184,101 @@ class _MyHomePageState extends State<MyHomePage> {
                             colors: [Color(0xFFfdd835), Color(0xFFf9b01e)])),
                     child: SingleChildScrollView(
                       child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
+                            Container(
+                                alignment: Alignment.topRight,
+                                
+                                child: PopupMenuButton(
+                                  color: Colors.black,
+                                  itemBuilder: (context) => [
+                                    const PopupMenuItem<int>(
+                                      value: 0,
+                                      child: Text(
+                                        "Share",
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                    ),
+                                  ],
+                                  onSelected: (item) async {
+                                    Future.delayed(
+                                        const Duration(milliseconds: 500),
+                                        () async {
+                                      final image = await controller.capture();
+                                      takeScreenshots(image!);
+                                    });
+                                  },
+                                ),
+                              ),
                           Stack(children: [
-                            Positioned(
-                                child: Container(
-                              height: 250,
-                              alignment: Alignment.topCenter,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(25),
-                                  gradient: const LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                      colors: [
-                                        Color(0xFFfdd835),
-                                        Color(0xFFfbc02d)
-                                      ])),
-                              padding: const EdgeInsets.only(top: 40),
-                              child: Column(
+                            Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Column(
-                                    children: [
-                                      Container(
+                                  Container(
+                                    margin: EdgeInsets.only(bottom: 30),
+                                    child: Column(
+                                      children: [
+                                        Container(
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                                "Gold Jewellery Price Calculator",
+                                                style: TextStyle(
+                                                    fontSize: 20,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: kColorRed))),
+                                        Container(
+                                          margin: EdgeInsets.only(top:15),
                                           alignment: Alignment.center,
-                                          padding: const EdgeInsets.only(
-                                              left: 0, top: 0),
-                                          child: Text(
-                                              "Gold Jewellery Price Calculator",
-                                              style: TextStyle(
-                                                  fontSize: 20,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: kColorRed))),
-                                      Container(
-                                        alignment: Alignment.center,
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Container(
-                                                margin: const EdgeInsets.only(
-                                                  top: 15,
-                                                  // left: 20,
-                                                ),
-                                                decoration: BoxDecoration(
-                                                    color: kColorRed,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10)),
-                                                alignment: Alignment.center,
-                                                width: 140,
-                                                height: 30,
-                                                child: Text(
-                                                  "Date: $df",
-                                                  style: TextStyle(
-                                                      color: kColorWhite),
-                                                )),
-                                            Container(
-                                                margin: const EdgeInsets.only(
-                                                  top: 15,
-                                                  left: 40,
-                                                ),
-                                                decoration: BoxDecoration(
-                                                    color: kColorRed,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10)),
-                                                alignment: Alignment.center,
-                                                width: 140,
-                                                height: 30,
-                                                child: Text(
-                                                  "Time: $time",
-                                                  style: const TextStyle(
-                                                      color: Colors.white),
-                                                ))
-                                          ],
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Container(
+                                                  margin: const EdgeInsets.only(
+                                                    top: 0,
+                                                    // left: 20,
+                                                  ),
+                                                  decoration: BoxDecoration(
+                                                      color: kColorRed,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10)),
+                                                  alignment: Alignment.center,
+                                                  width: 140,
+                                                  height: 30,
+                                                  child: Text(
+                                                    "Date: $df",
+                                                    style: TextStyle(
+                                                        color: kColorWhite),
+                                                  )),
+                                              Container(
+                                                  margin: const EdgeInsets.only(
+                                                    top: 0,
+                                                    left: 40,
+                                                  ),
+                                                  decoration: BoxDecoration(
+                                                      color: kColorRed,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10)),
+                                                  alignment: Alignment.center,
+                                                  width: 140,
+                                                  height: 30,
+                                                  child: Text(
+                                                    "Time: $time",
+                                                    style: const TextStyle(
+                                                        color: Colors.white),
+                                                  ))
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            )),
-                            Container(
-                              alignment: Alignment.centerRight,
-                              margin: const EdgeInsets.only(
-                                top: 50,
-                              ),
-                              child: PopupMenuButton(
-                                color: Colors.black,
-                                itemBuilder: (context) => [
-                                  const PopupMenuItem<int>(
-                                    value: 0,
-                                    child: Text(
-                                      "Share",
-                                      style: TextStyle(color: Colors.white),
+                                      ],
                                     ),
                                   ),
                                 ],
-                                onSelected: (item) async {
-                                  Future.delayed(
-                                      const Duration(milliseconds: 500),
-                                      () async {
-                                    final image = await controller.capture();
-                                    takeScreenshots(image!);
-                                  });
-                                },
                               ),
-                            ),
+                            
+                            
                           ]),
                           Column(
                             mainAxisAlignment: MainAxisAlignment.center,
