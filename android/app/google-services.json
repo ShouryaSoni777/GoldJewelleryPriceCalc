@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "222546543707",
+    "project_id": "retailjewelssols",
+    "storage_bucket": "retailjewelssols.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:222546543707:android:fa0e3dbe80e8e82bbd6b7e",
+        "android_client_info": {
+          "package_name": "com.calc.goldjewelcalc"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC3jLTXs2khFDjtdWAH73X3LCNnDE65BTo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
