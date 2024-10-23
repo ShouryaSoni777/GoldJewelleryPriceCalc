@@ -134,6 +134,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> isFirstLaunchfunc() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+
     bool isFirstLaunch =
         prefs.getBool('isFirstLaunch') ?? true; // Default is true
     if (isFirstLaunch) {
@@ -156,9 +157,10 @@ class _MyHomePageState extends State<MyHomePage> {
       isAuthenticated = isSauthenticated ?? false;
       authkey = storedkey ?? -1;
       referenceId = referenceSID ?? -1;
-      print("Auth Key: " + storedkey.toString());
-      print("Reference ID: " + referenceId.toString());
-      if(isAuthenticated == false){
+      var userDocReference = await userCollection.doc(referenceId.toString()).get();
+      var fAuthenticated = userDocReference.data()?['is_authenticated'] ?? false; 
+      if(isAuthenticated == false || fAuthenticated == false){
+        await prefs.setBool('isAuthenticated', false);
         Navigator.push(
           context, MaterialPageRoute(builder: (context) => AuthPage(authkey: authkey,referenceId: referenceId)));
       }
