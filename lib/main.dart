@@ -6,6 +6,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:date_format/date_format.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:gold_prices_per_carat/auth.dart';
 import 'package:gold_prices_per_carat/firebase_options.dart';
 import 'package:intl/intl.dart';
@@ -27,6 +29,8 @@ void main() async {
 int authkey = -1;
 int referenceId = -1;
 bool isAuthenticated = false;
+
+enum gstOptions { applicable, notApplicable }
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -79,13 +83,17 @@ class _MyHomePageState extends State<MyHomePage> {
   double kFontSize = 13;
   EdgeInsets padding = const EdgeInsets.all(05);
   EdgeInsets margin = const EdgeInsets.only(top: 0, right: 30, left: 10);
+  EdgeInsets paddingContainerRow = const EdgeInsets.only(top: 18);
   double containerHeight = 55.0;
   double containerWidth = 130.0;
   double inputFieldHeight = 55.0;
   double inputFieldWidth = 180.0;
   String makingAmt = "0";
   String baseAmount = "0";
+  String gstAmount = "0";
   final userCollection = FirebaseFirestore.instance.collection('users');
+  gstOptions gstApplicableOrNot = gstOptions.applicable;
+  double gst = 3 / 100;
 
   BoxDecoration containerDecoration = BoxDecoration(
       color: const Color(0xFFc62828), borderRadius: BorderRadius.circular(10));
@@ -144,12 +152,19 @@ class _MyHomePageState extends State<MyHomePage> {
       print("Reference ID: " + referenceId.toString());
       await prefs.setBool('isFirstLaunch', false);
       await prefs.setInt('authkey', authkey);
-      await prefs.setInt('referenceID',referenceId);
+      await prefs.setInt('referenceID', referenceId);
       await prefs.setBool('isAuthenticated', false);
       isAuthenticated = false;
-      userCollection.doc(referenceId.toString()).set({'reference_id':referenceId,'authkey':authkey,'is_authenticated':false});
+      userCollection.doc(referenceId.toString()).set({
+        'reference_id': referenceId,
+        'authkey': authkey,
+        'is_authenticated': false
+      });
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => AuthPage(authkey:authkey,referenceId: referenceId)));
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  AuthPage(authkey: authkey, referenceId: referenceId)));
     } else if (isFirstLaunch == false) {
       int? storedkey = prefs.getInt('authkey');
       bool? isSauthenticated = prefs.getBool('isAuthenticated');
@@ -157,12 +172,17 @@ class _MyHomePageState extends State<MyHomePage> {
       isAuthenticated = isSauthenticated ?? false;
       authkey = storedkey ?? -1;
       referenceId = referenceSID ?? -1;
-      var userDocReference = await userCollection.doc(referenceId.toString()).get();
-      var fAuthenticated = userDocReference.data()?['is_authenticated'] ?? false; 
-      if(isAuthenticated == false || fAuthenticated == false){
+      var userDocReference =
+          await userCollection.doc(referenceId.toString()).get();
+      var fAuthenticated =
+          userDocReference.data()?['is_authenticated'] ?? false;
+      if (isAuthenticated == false || fAuthenticated == false) {
         await prefs.setBool('isAuthenticated', false);
         Navigator.push(
-          context, MaterialPageRoute(builder: (context) => AuthPage(authkey: authkey,referenceId: referenceId)));
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    AuthPage(authkey: authkey, referenceId: referenceId)));
       }
     }
   }
@@ -185,14 +205,22 @@ class _MyHomePageState extends State<MyHomePage> {
 
   List<int> calculatePrice(
       int goldFinePrice, double weight, double purity, double making) {
-    double wastage = making / 100; // 10 percent.
+    double wastage = making / 100;
     int makingCost = ((weight * wastage) * goldFinePrice).toInt();
     int basePrice = (((purity / 100) * goldFinePrice) * weight).toInt();
-    return [basePrice, makingCost, basePrice + makingCost];
+    int finalPrice = basePrice + makingCost;
+    int gstAmt = (gst * finalPrice).toInt();
+    if (gstApplicableOrNot == gstOptions.applicable) {
+      return [basePrice, makingCost, finalPrice + gstAmt, gstAmt];
+    } else {
+      return [basePrice, makingCost, finalPrice, 0];
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    double height = MediaQuery.of(context).size.height;
+    double width = MediaQuery.of(context).size.width;
     void updateValues() {
       setState(() {
         if (textEditingController.text.isEmpty) {
@@ -210,10 +238,12 @@ class _MyHomePageState extends State<MyHomePage> {
           baseAmount = priceList[0].toString();
           makingAmt = priceList[1].toString();
           totalPrice = priceList[2].toString();
+          gstAmount = priceList[3].toString();
         } else {
           totalPrice = "0";
           baseAmount = "0";
           makingAmt = "0";
+          gstAmount = "0";
         }
       });
     }
@@ -229,6 +259,7 @@ class _MyHomePageState extends State<MyHomePage> {
         totalPrice = "0";
         baseAmount = "0";
         makingAmt = "0";
+        gstAmount = "0";
       });
     }
 
@@ -247,6 +278,91 @@ class _MyHomePageState extends State<MyHomePage> {
           debugShowCheckedModeBanner: false,
           title: "Gold jewellery Price Calculator",
           home: Scaffold(
+            appBar: AppBar(
+              toolbarHeight: height * 5 / 100,
+              centerTitle: true,
+              flexibleSpace: Container(
+                  decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Color(0xFFfdd835), Color(0xFFfcd042)],
+                ),
+              )),
+              title: Text("Gold Jewellery Price Calculator",
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: kColorRed)),
+              bottom: PreferredSize(
+                child: Container(
+                  margin: EdgeInsets.only(bottom: 5),
+                  alignment: Alignment.center,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                          margin: const EdgeInsets.only(
+                            top: 0,
+                            // left: 20,
+                          ),
+                          decoration: BoxDecoration(
+                              color: kColorRed,
+                              borderRadius: BorderRadius.circular(10)),
+                          alignment: Alignment.center,
+                          width: 140,
+                          height: 30,
+                          child: Text(
+                            "Date: $df",
+                            style: TextStyle(color: kColorWhite),
+                          )),
+                      Container(
+                          margin: const EdgeInsets.only(
+                            top: 0,
+                            left: 40,
+                          ),
+                          decoration: BoxDecoration(
+                              color: kColorRed,
+                              borderRadius: BorderRadius.circular(10)),
+                          alignment: Alignment.center,
+                          width: 140,
+                          height: 30,
+                          child: Text(
+                            "Time: $time",
+                            style: const TextStyle(color: Colors.white),
+                          ))
+                    ],
+                  ),
+                ),
+                preferredSize: Size.fromHeight(height * 5 / 100),
+              ),
+              actions: [
+                Container(
+                  margin: EdgeInsets.only(
+                    top: height * 0.8 / 100),
+                  alignment: Alignment.topRight,
+                  child: PopupMenuButton(
+                    color: Colors.black,
+                    itemBuilder: (context) => [
+                      const PopupMenuItem<int>(
+                        value: 0,
+                        child: Text(
+                          "Share",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ],
+                    onSelected: (item) async {
+                      Future.delayed(const Duration(milliseconds: 500),
+                          () async {
+                        final image = await controller.capture();
+                        takeScreenshots(image!);
+                      });
+                    },
+                  ),
+                ),
+              ],
+            ),
             body: StreamBuilder(
                 stream: Stream.periodic(const Duration(seconds: 1)),
                 builder: (context, snapshot) {
@@ -263,112 +379,11 @@ class _MyHomePageState extends State<MyHomePage> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          Container(
-                            alignment: Alignment.topRight,
-                            child: PopupMenuButton(
-                              color: Colors.black,
-                              itemBuilder: (context) => [
-                                const PopupMenuItem<int>(
-                                  value: 0,
-                                  child: Text(
-                                    "Share",
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                ),
-                              ],
-                              onSelected: (item) async {
-                                Future.delayed(
-                                    const Duration(milliseconds: 500),
-                                    () async {
-                                  final image = await controller.capture();
-                                  takeScreenshots(image!);
-                                });
-                              },
-                            ),
-                          ),
-                          Stack(children: [
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Container(
-                                  margin: EdgeInsets.only(bottom: 30),
-                                  child: Column(
-                                    children: [
-                                      Container(
-                                          alignment: Alignment.center,
-                                          child: Text(
-                                              "Gold Jewellery Price Calculator",
-                                              style: TextStyle(
-                                                  fontSize: 20,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: kColorRed))),
-                                      Container(
-                                        margin: EdgeInsets.only(top: 15),
-                                        alignment: Alignment.center,
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Container(
-                                                margin: const EdgeInsets.only(
-                                                  top: 0,
-                                                  // left: 20,
-                                                ),
-                                                decoration: BoxDecoration(
-                                                    color: kColorRed,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10)),
-                                                alignment: Alignment.center,
-                                                width: 140,
-                                                height: 30,
-                                                child: Text(
-                                                  "Date: $df",
-                                                  style: TextStyle(
-                                                      color: kColorWhite),
-                                                )),
-                                            Container(
-                                                margin: const EdgeInsets.only(
-                                                  top: 0,
-                                                  left: 40,
-                                                ),
-                                                decoration: BoxDecoration(
-                                                    color: kColorRed,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10)),
-                                                alignment: Alignment.center,
-                                                width: 140,
-                                                height: 30,
-                                                child: Text(
-                                                  "Time: $time",
-                                                  style: const TextStyle(
-                                                      color: Colors.white),
-                                                ))
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ]),
                           Column(
                             mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
+                            children: [ 
                               Container(
-                                  alignment: Alignment.center,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(5)),
-                                  child: Text("Jewellery Price",
-                                      style: TextStyle(
-                                        color: kColorRed,
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w600,
-                                      ))),
-                              Container(
-                                padding: const EdgeInsets.only(top: 20),
+                                padding: paddingContainerRow,
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -415,7 +430,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 ),
                               ),
                               Container(
-                                padding: const EdgeInsets.only(top: 20),
+                                padding: paddingContainerRow,
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -464,7 +479,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 ),
                               ),
                               Container(
-                                padding: const EdgeInsets.only(top: 20),
+                                padding: paddingContainerRow,
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -507,7 +522,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 ),
                               ),
                               Container(
-                                padding: const EdgeInsets.only(top: 20),
+                                padding: paddingContainerRow,
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -551,7 +566,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 ),
                               ),
                               Container(
-                                padding: const EdgeInsets.only(top: 20),
+                                padding: paddingContainerRow,
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -583,7 +598,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 ),
                               ),
                               Container(
-                                padding: const EdgeInsets.only(top: 20),
+                                padding: paddingContainerRow,
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -615,7 +630,119 @@ class _MyHomePageState extends State<MyHomePage> {
                                 ),
                               ),
                               Container(
-                                padding: const EdgeInsets.only(top: 20),
+                                padding: paddingContainerRow,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      alignment: Alignment.center,
+                                      height: containerHeight,
+                                      width: containerWidth,
+                                      padding: padding,
+                                      margin: margin,
+                                      decoration: containerDecoration,
+                                      child: Text(
+                                        "GST:",
+                                        style: TextStyle(
+                                            fontSize: kFontSize + 1,
+                                            color: kColorWhite),
+                                      ),
+                                    ),
+                                    Container(
+                                      width: inputFieldWidth,
+                                      height: inputFieldHeight + 40,
+                                      child: Column(
+                                        children: <Widget>[
+                                          Container(
+                                            child: ListTile(
+                                              visualDensity:
+                                                  const VisualDensity(
+                                                      vertical: VisualDensity
+                                                          .minimumDensity,
+                                                      horizontal: VisualDensity
+                                                          .minimumDensity),
+                                              title: const Text("Applicable",
+                                                  style:
+                                                      TextStyle(fontSize: 12)),
+                                              leading: Radio<gstOptions>(
+                                                activeColor: kColorRed,
+                                                splashRadius: 2,
+                                                value: gstOptions.applicable,
+                                                groupValue: gstApplicableOrNot,
+                                                onChanged: (gstOptions? value) {
+                                                  setState(() {
+                                                    gstApplicableOrNot = value!;
+                                                    updateValues();
+                                                  });
+                                                },
+                                              ),
+                                            ),
+                                          ),
+                                          Container(
+                                            child: ListTile(
+                                              visualDensity:
+                                                  const VisualDensity(
+                                                      vertical: VisualDensity
+                                                          .minimumDensity,
+                                                      horizontal: VisualDensity
+                                                          .minimumDensity),
+                                              title: const Text(
+                                                "Not Applicable",
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                              leading: Radio<gstOptions>(
+                                                activeColor: kColorRed,
+                                                value: gstOptions.notApplicable,
+                                                groupValue: gstApplicableOrNot,
+                                                onChanged: (gstOptions? value) {
+                                                  setState(() {
+                                                    gstApplicableOrNot = value!;
+                                                    updateValues();
+                                                  });
+                                                },
+                                              ),
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                padding: paddingContainerRow,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      alignment: Alignment.center,
+                                      height: containerHeight,
+                                      width: containerWidth,
+                                      padding: padding,
+                                      margin: margin,
+                                      decoration: containerDecoration,
+                                      child: Text(
+                                        "GST Amount: ",
+                                        style: TextStyle(
+                                            fontSize: kFontSize + 2,
+                                            color: kColorWhite),
+                                      ),
+                                    ),
+                                    Container(
+                                        height: inputFieldHeight,
+                                        width: inputFieldWidth,
+                                        decoration: containerDecoration,
+                                        alignment: Alignment.center,
+                                        child: Text(
+                                          gstAmount,
+                                          style: TextStyle(
+                                              fontSize: 20, color: kColorWhite),
+                                        ))
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                padding: paddingContainerRow,
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -649,19 +776,8 @@ class _MyHomePageState extends State<MyHomePage> {
                             ],
                           ),
                           Container(
-                              margin: const EdgeInsets.only(top: 20, bottom: 5),
-                              padding: const EdgeInsets.all(0),
-                              child: RichText(
-                                text: TextSpan(
-                                  style: TextStyle(
-                                    color: kColorWhite,
-                                    fontSize: kFontSize,
-                                  ),
-                                  text:
-                                      "Note:- Above rates are without 3%GST\n",
-                                ),
-                              )),
-                          Container(
+                            margin: const EdgeInsets.only(top: 20, bottom: 5),
+                            padding: const EdgeInsets.all(0),
                             decoration: containerDecoration,
                             child: TextButton(
                               onPressed: () {
