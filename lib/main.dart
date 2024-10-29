@@ -21,25 +21,20 @@ int authkey = -1;
 int referenceId = -1;
 bool isAuthenticated = false;
 
-enum gstOptions { applicable, notApplicable }
-
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-  String font = "Quicksand";
+  String font = "SF Pro Display";
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Retail Jewellery Price Calculator',
       theme: ThemeData(
           fontFamily: font,
         ),
-      // theme: ThemeData(
-      //   primaryColor: Colors.transparent,
-      // ),
-      home: MyHomePage(),
+      home: const MyHomePage(),
     );
   }
 }
@@ -64,8 +59,6 @@ class _MyHomePageState extends State<MyHomePage> {
     if (isFirstLaunch) {
       authkey = authKeyGenerator();
       referenceId = referenceIdGenerator();
-      print("Auth Key: " + authkey.toString());
-      print("Reference ID: " + referenceId.toString());
       await prefs.setBool('isFirstLaunch', false);
       await prefs.setInt('authkey', authkey);
       await prefs.setInt('referenceID', referenceId);
@@ -116,31 +109,27 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    double height = MediaQuery.of(context).size.height;
-    double width = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Products",style: TextStyle(color: Colors.white),),centerTitle: true,backgroundColor: Color(0xFF002147),),
-      body: Container(
-        child: ListView.builder(
-            itemCount: routes.length,
-            itemBuilder: (context, index) {
-              return Card.outlined(
-                margin: EdgeInsets.all(10),
-                child: ListTile(
-                  visualDensity: VisualDensity(horizontal: VisualDensity.maximumDensity,vertical: VisualDensity.maximumDensity),
-                  title: Text(routes[index]['pageName']),
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        CupertinoPageRoute(
-                            builder: (context) => routes[index]['route']));
-                  },
-                  trailing: CupertinoListTileChevron(),
-                ),
-              );
-            }),
-      ),
+      appBar: AppBar(title: const Text("Products",style: TextStyle(color: Colors.white),),centerTitle: true,backgroundColor: const Color(0xFF002147),),
+      body: ListView.builder(
+          itemCount: routes.length,
+          itemBuilder: (context, index) {
+            return Card.outlined(
+              margin: const EdgeInsets.all(10),
+              child: ListTile(
+                visualDensity: const VisualDensity(horizontal: VisualDensity.maximumDensity,vertical: VisualDensity.maximumDensity),
+                title: Text(routes[index]['pageName']),
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      CupertinoPageRoute(
+                          builder: (context) => routes[index]['route']));
+                },
+                trailing: const CupertinoListTileChevron(),
+              ),
+            );
+          }),
     );
   }
 }

@@ -20,8 +20,8 @@ int referenceIdGenerator(){
 }
 
 class AuthPage extends StatefulWidget {
-  final authkey;
-  final referenceId;
+  final int authkey;
+  final int referenceId;
   const AuthPage({Key? key,required this.authkey,required this.referenceId}) : super(key: key);
   @override
   State<AuthPage> createState() => _AuthPageState();
@@ -56,9 +56,7 @@ class _AuthPageState extends State<AuthPage> {
     TextEditingController authKeycontroller = TextEditingController();
     return PopScope(
       canPop: false,
-      child: MaterialApp(
-          theme: ThemeData(fontFamily: "Quicksand"),
-          home: Scaffold(
+          child: Scaffold(
             key: scaffoldkey,
             body: Container(
               decoration: const BoxDecoration(
@@ -71,7 +69,7 @@ class _AuthPageState extends State<AuthPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    margin: EdgeInsets.all(10),
+                    margin: const EdgeInsets.all(10),
                     child: const Text("Welcome!",
                         style: TextStyle(
                             color: Color(0xFFc62828),
@@ -83,7 +81,7 @@ class _AuthPageState extends State<AuthPage> {
                     child: Text("Reference ID: " + referenceId.toString()),
                   ),
                   Container(
-                    margin: EdgeInsets.only(bottom: 20, top: 10),
+                    margin: const EdgeInsets.only(bottom: 20, top: 10),
                     child: const Text(
                         "Please enter you Authentication key to continue",
                         style: TextStyle(
@@ -102,19 +100,19 @@ class _AuthPageState extends State<AuthPage> {
                       onCompleted: (val) {
                         authenticate(int.parse(val));
                       },
-                      cursorColor: Color(0xFFc62828),
+                      cursorColor: const Color(0xFFc62828),
                       textCapitalization: TextCapitalization.characters,
-                      textStyle: TextStyle(color: Colors.black),
+                      textStyle: const TextStyle(color: Colors.black),
                       keyboardType: TextInputType.number,
                       pinTheme: PinTheme(
-                          selectedColor: Color(0xFFc62828),
-                          activeColor: Color(0xFFc62828),
-                          inactiveColor: Color(0xFFc62828),
+                          selectedColor: const Color(0xFFc62828),
+                          activeColor: const Color(0xFFc62828),
+                          inactiveColor: const Color(0xFFc62828),
                           fieldWidth: width * 9 / 100,
                           shape: PinCodeFieldShape.underline,
-                          activeFillColor: Color(0xFFc62828),
-                          inactiveFillColor: Color(0xFFc62828),
-                          selectedFillColor: Color(0xFFc62828)),
+                          activeFillColor: const Color(0xFFc62828),
+                          inactiveFillColor: const Color(0xFFc62828),
+                          selectedFillColor: const Color(0xFFc62828)),
                       appContext: context,
                       length: 8,
                       animationType: AnimationType.fade,
@@ -127,7 +125,7 @@ class _AuthPageState extends State<AuthPage> {
                 ],
               ),
             ),
-          )),
+          )
     );
   }
 }

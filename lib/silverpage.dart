@@ -1,22 +1,16 @@
 import 'dart:async';
 import 'dart:io' as io;
-import 'package:firebase_core/firebase_core.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:date_format/date_format.dart';
 import 'package:flutter/services.dart';
-import 'package:gold_prices_per_carat/auth.dart';
-import 'package:gold_prices_per_carat/firebase_options.dart';
 import 'package:intl/intl.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-enum gstOptions { applicable, notApplicable }
+enum GSTOptions { applicable, notApplicable }
 
 class SilverPage extends StatefulWidget {
   const SilverPage({
@@ -60,7 +54,7 @@ class _SilverPageState extends State<SilverPage> {
   String makingAmt = "0";
   String baseAmount = "0";
   String gstAmount = "0";
-  gstOptions gstApplicableOrNot = gstOptions.applicable;
+  GSTOptions gstApplicableOrNot = GSTOptions.applicable;
   double gst = 3 / 100;
 
   BoxDecoration containerDecoration = BoxDecoration(
@@ -71,7 +65,7 @@ class _SilverPageState extends State<SilverPage> {
           borderSide: const BorderSide(color: Color(0xFF002147)),
           borderRadius: BorderRadius.circular(10)),
       hintText: "Fine Silver(999)",
-      hintStyle: const TextStyle(color: Colors.white38),
+      hintStyle: const TextStyle(color: Colors.white38,fontWeight: FontWeight.w200),
       border: OutlineInputBorder(
           borderSide: const BorderSide(color: Color(0xFF002147)),
           borderRadius: BorderRadius.circular(10)));
@@ -81,7 +75,7 @@ class _SilverPageState extends State<SilverPage> {
           borderSide: const BorderSide(color: Color(0xFF002147)),
           borderRadius: BorderRadius.circular(10)),
       hintText: "Weight",
-      hintStyle: const TextStyle(color: Colors.white38),
+      hintStyle: const TextStyle(color: Colors.white38,fontWeight: FontWeight.w200),
       border: OutlineInputBorder(
           borderSide: const BorderSide(color: Color(0xFF002147)),
           borderRadius: BorderRadius.circular(10)));
@@ -91,7 +85,7 @@ class _SilverPageState extends State<SilverPage> {
           borderSide: const BorderSide(color: Color(0xFF002147)),
           borderRadius: BorderRadius.circular(10)),
       hintText: "Purity",
-      hintStyle: const TextStyle(color: Colors.white38),
+      hintStyle: const TextStyle(color: Colors.white38,fontWeight: FontWeight.w200),
       border: OutlineInputBorder(
           borderSide: const BorderSide(color: Color(0xFF002147)),
           borderRadius: BorderRadius.circular(10)));
@@ -101,7 +95,7 @@ class _SilverPageState extends State<SilverPage> {
           borderSide: const BorderSide(color: Color(0xFF002147)),
           borderRadius: BorderRadius.circular(10)),
       hintText: "Making",
-      hintStyle: const TextStyle(color: Colors.white38),
+      hintStyle: const TextStyle(color: Colors.white38,fontWeight: FontWeight.w200),
       border: OutlineInputBorder(
           borderSide: const BorderSide(color: Color(0xFF002147)),
           borderRadius: BorderRadius.circular(10)));
@@ -141,7 +135,7 @@ class _SilverPageState extends State<SilverPage> {
     int basePrice = (((purity / 100) * silverFinePricePerGram) * weight).toInt();
     int finalPrice = basePrice + makingCost;
     int gstAmt = (gst * finalPrice).toInt();
-    if (gstApplicableOrNot == gstOptions.applicable) {
+    if (gstApplicableOrNot == GSTOptions.applicable) {
       return [basePrice, makingCost, finalPrice + gstAmt, gstAmt];
     } else {
       return [basePrice, makingCost, finalPrice, 0];
@@ -150,8 +144,8 @@ class _SilverPageState extends State<SilverPage> {
 
   @override
   Widget build(BuildContext context) {
-    String font = "Quicksand";
     double height = MediaQuery.of(context).size.height;
+    // ignore: unused_local_variable
     double width = MediaQuery.of(context).size.width;
     void updateValues() {
       setState(() {
@@ -308,7 +302,7 @@ class _SilverPageState extends State<SilverPage> {
                                               style: TextStyle(
                                                   fontSize: kFontSize,
                                                   color: Colors.white,
-                                                  fontFamily: font)))),
+                                                  fontFamily: "SF Pro Display")))),
                                   Container(
                                     decoration: containerDecoration,
                                     height: inputFieldHeight,
@@ -559,56 +553,52 @@ class _SilverPageState extends State<SilverPage> {
                                           color: kColorWhite),
                                     ),
                                   ),
-                                  Container(
+                                  SizedBox(
                                     width: inputFieldWidth,
                                     height: inputFieldHeight + 40,
                                     child: Column(
                                       children: <Widget>[
-                                        Container(
-                                          child: ListTile(
-                                            visualDensity: const VisualDensity(
-                                                vertical: VisualDensity
-                                                    .minimumDensity,
-                                                horizontal: VisualDensity
-                                                    .minimumDensity),
-                                            title: const Text("Applicable",
-                                                style: TextStyle(fontSize: 12,color: Colors.white)),
-                                            leading: Radio<gstOptions>(
-                                              activeColor: kColorPrimary,
-                                              splashRadius: 2,
-                                              value: gstOptions.applicable,
-                                              groupValue: gstApplicableOrNot,
-                                              onChanged: (gstOptions? value) {
-                                                setState(() {
-                                                  gstApplicableOrNot = value!;
-                                                  updateValues();
-                                                });
-                                              },
-                                            ),
+                                        ListTile(
+                                          visualDensity: const VisualDensity(
+                                              vertical: VisualDensity
+                                                  .minimumDensity,
+                                              horizontal: VisualDensity
+                                                  .minimumDensity),
+                                          title: const Text("Applicable",
+                                              style: TextStyle(fontSize: 12,color: Colors.white)),
+                                          leading: Radio<GSTOptions>(
+                                            activeColor: kColorPrimary,
+                                            splashRadius: 2,
+                                            value: GSTOptions.applicable,
+                                            groupValue: gstApplicableOrNot,
+                                            onChanged: (GSTOptions? value) {
+                                              setState(() {
+                                                gstApplicableOrNot = value!;
+                                                updateValues();
+                                              });
+                                            },
                                           ),
                                         ),
-                                        Container(
-                                          child: ListTile(
-                                            visualDensity: const VisualDensity(
-                                                vertical: VisualDensity
-                                                    .minimumDensity,
-                                                horizontal: VisualDensity
-                                                    .minimumDensity),
-                                            title: const Text(
-                                              "Not Applicable",
-                                              style: TextStyle(fontSize: 12,color: Colors.white),
-                                            ),
-                                            leading: Radio<gstOptions>(
-                                              activeColor: kColorPrimary,
-                                              value: gstOptions.notApplicable,
-                                              groupValue: gstApplicableOrNot,
-                                              onChanged: (gstOptions? value) {
-                                                setState(() {
-                                                  gstApplicableOrNot = value!;
-                                                  updateValues();
-                                                });
-                                              },
-                                            ),
+                                        ListTile(
+                                          visualDensity: const VisualDensity(
+                                              vertical: VisualDensity
+                                                  .minimumDensity,
+                                              horizontal: VisualDensity
+                                                  .minimumDensity),
+                                          title: const Text(
+                                            "Not Applicable",
+                                            style: TextStyle(fontSize: 12,color: Colors.white),
+                                          ),
+                                          leading: Radio<GSTOptions>(
+                                            activeColor: kColorPrimary,
+                                            value: GSTOptions.notApplicable,
+                                            groupValue: gstApplicableOrNot,
+                                            onChanged: (GSTOptions? value) {
+                                              setState(() {
+                                                gstApplicableOrNot = value!;
+                                                updateValues();
+                                              });
+                                            },
                                           ),
                                         )
                                       ],
