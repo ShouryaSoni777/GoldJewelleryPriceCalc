@@ -44,6 +44,8 @@ class _GoldPageState extends State<GoldPage> {
   EdgeInsets padding = const EdgeInsets.all(05);
   EdgeInsets margin = const EdgeInsets.only(top: 0, right: 30, left: 10);
   EdgeInsets paddingContainerRow = const EdgeInsets.only(top: 18);
+  final snackBarDuration = const Duration(milliseconds: 750);
+
   double containerHeight = 55.0;
   double containerWidth = 130.0;
   double inputFieldHeight = 55.0;
@@ -62,7 +64,8 @@ class _GoldPageState extends State<GoldPage> {
           borderSide: const BorderSide(color: Color(0xFFc62828)),
           borderRadius: BorderRadius.circular(10)),
       hintText: "Fine Gold(999)",
-      hintStyle: const TextStyle(color: Colors.black54,fontWeight: FontWeight.w200),
+      hintStyle:
+          const TextStyle(color: Colors.black54, fontWeight: FontWeight.w200),
       border: OutlineInputBorder(
           borderSide: const BorderSide(color: Color(0xFFc62828)),
           borderRadius: BorderRadius.circular(10)));
@@ -72,7 +75,8 @@ class _GoldPageState extends State<GoldPage> {
           borderSide: const BorderSide(color: Color(0xFFc62828)),
           borderRadius: BorderRadius.circular(10)),
       hintText: "Weight",
-      hintStyle: const TextStyle(color: Colors.black54,fontWeight: FontWeight.w200),
+      hintStyle:
+          const TextStyle(color: Colors.black54, fontWeight: FontWeight.w200),
       border: OutlineInputBorder(
           borderSide: const BorderSide(color: Color(0xFFc62828)),
           borderRadius: BorderRadius.circular(10)));
@@ -82,7 +86,8 @@ class _GoldPageState extends State<GoldPage> {
           borderSide: const BorderSide(color: Color(0xFFc62828)),
           borderRadius: BorderRadius.circular(10)),
       hintText: "Purity",
-      hintStyle: const TextStyle(color: Colors.black54,fontWeight: FontWeight.w200),
+      hintStyle:
+          const TextStyle(color: Colors.black54, fontWeight: FontWeight.w200),
       border: OutlineInputBorder(
           borderSide: const BorderSide(color: Color(0xFFc62828)),
           borderRadius: BorderRadius.circular(10)));
@@ -92,7 +97,8 @@ class _GoldPageState extends State<GoldPage> {
           borderSide: const BorderSide(color: Color(0xFFc62828)),
           borderRadius: BorderRadius.circular(10)),
       hintText: "Making",
-      hintStyle: const TextStyle(color: Colors.black54,fontWeight: FontWeight.w200),
+      hintStyle:
+          const TextStyle(color: Colors.black54, fontWeight: FontWeight.w200),
       border: OutlineInputBorder(
           borderSide: const BorderSide(color: Color(0xFFc62828)),
           borderRadius: BorderRadius.circular(10)));
@@ -110,7 +116,7 @@ class _GoldPageState extends State<GoldPage> {
   }
 
   @override
-  void dispose(){
+  void dispose() {
     super.dispose();
     timer!.cancel();
   }
@@ -143,6 +149,7 @@ class _GoldPageState extends State<GoldPage> {
     double height = MediaQuery.of(context).size.height;
     // ignore: unused_local_variable
     double width = MediaQuery.of(context).size.width;
+    double pixelRatio = MediaQuery.of(context).devicePixelRatio;
     void updateValues() {
       setState(() {
         if (textEditingController.text.isEmpty) {
@@ -193,110 +200,111 @@ class _GoldPageState extends State<GoldPage> {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [Color(0xFFfdd835), Color(0xFFf9a825)])),
-          child: Scaffold(
-            appBar: AppBar(
-              toolbarHeight: height * 5 / 100,
-              centerTitle: true,
-              flexibleSpace: Container(
-                  decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [Color(0xFFfdd835), Color(0xFFfcd042)],
-                ),
-              )),
-              title: Text("Gold Jewellery Price Calculator",
-                  style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: kColorRed)),
-              bottom: PreferredSize(
-                child: Container(
-                  margin: const EdgeInsets.only(bottom: 5),
-                  alignment: Alignment.center,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                          margin: const EdgeInsets.only(
-                            top: 0,
-                            // left: 20,
-                          ),
-                          decoration: BoxDecoration(
-                              color: kColorRed,
-                              borderRadius: BorderRadius.circular(10)),
-                          alignment: Alignment.center,
-                          width: 140,
-                          height: 30,
-                          child: Text(
-                            "Date: $df",
-                            style: TextStyle(color: kColorWhite),
-                          )),
-                      Container(
-                          margin: const EdgeInsets.only(
-                            top: 0,
-                            left: 40,
-                          ),
-                          decoration: BoxDecoration(
-                              color: kColorRed,
-                              borderRadius: BorderRadius.circular(10)),
-                          alignment: Alignment.center,
-                          width: 140,
-                          height: 30,
-                          child: Text(
-                            "Time: $time",
-                            style: const TextStyle(color: Colors.white),
-                          ))
-                    ],
-                  ),
-                ),
-                preferredSize: Size.fromHeight(height * 5 / 100),
+        child: Scaffold(
+          appBar: AppBar(
+            toolbarHeight: height * 5 / 100,
+            centerTitle: true,
+            flexibleSpace: Container(
+                decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [Color(0xFFfdd835), Color(0xFFfcd042)],
               ),
-              actions: [
-                Container(
-                  margin: EdgeInsets.only(top: height * 0.8 / 100),
-                  alignment: Alignment.topRight,
-                  child: PopupMenuButton(
-                    color: Colors.black,
-                    itemBuilder: (context) => [
-                      const PopupMenuItem<int>(
-                        value: 0,
-                        child: Text(
-                          "Share",
-                          style: TextStyle(color: Colors.white),
+            )),
+            title: Text("Gold Jewellery Price Calculator",
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: kColorRed)),
+            bottom: PreferredSize(
+              child: Container(
+                margin: const EdgeInsets.only(bottom: 5),
+                alignment: Alignment.center,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                        margin: const EdgeInsets.only(
+                          top: 0,
+                          // left: 20,
                         ),
-                      ),
-                    ],
-                    onSelected: (item) async {
-                      Future.delayed(const Duration(milliseconds: 500),
-                          () async {
-                        final image = await controller.capture();
-                        takeScreenshots(image!);
-                      });
-                    },
-                  ),
+                        decoration: BoxDecoration(
+                            color: kColorRed,
+                            borderRadius: BorderRadius.circular(10)),
+                        alignment: Alignment.center,
+                        width: 140,
+                        height: 30,
+                        child: Text(
+                          "Date: $df",
+                          style: TextStyle(color: kColorWhite),
+                        )),
+                    Container(
+                        margin: const EdgeInsets.only(
+                          top: 0,
+                          left: 40,
+                        ),
+                        decoration: BoxDecoration(
+                            color: kColorRed,
+                            borderRadius: BorderRadius.circular(10)),
+                        alignment: Alignment.center,
+                        width: 140,
+                        height: 30,
+                        child: Text(
+                          "Time: $time",
+                          style: const TextStyle(color: Colors.white),
+                        ))
+                  ],
                 ),
-              ],
+              ),
+              preferredSize: Size.fromHeight(height * 5 / 100),
             ),
-            body: StreamBuilder(
-                stream: Stream.periodic(const Duration(seconds: 1)),
-                builder: (context, snapshot) {
-                  return Container(
-                    height: MediaQuery.of(context).size.height,
-                    alignment: Alignment.center,
-                    width: MediaQuery.of(context).size.width,
-                    decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [Color(0xFFfdd835), Color(0xFFf9b01e)])),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
+            actions: [
+              Container(
+                margin: EdgeInsets.only(top: height * 0.8 / 100),
+                alignment: Alignment.topRight,
+                child: PopupMenuButton(
+                  color: Colors.black,
+                  itemBuilder: (context) => [
+                    const PopupMenuItem<int>(
+                      value: 0,
+                      child: Text(
+                        "Share",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ],
+                  onSelected: (item) async {
+                    final image = await controller.capture(
+                        delay: const Duration(milliseconds: 500),
+                        pixelRatio: pixelRatio);
+                    takeScreenshots(image!);
+                  },
+                ),
+              ),
+            ],
+          ),
+          body: StreamBuilder(
+              stream: Stream.periodic(const Duration(seconds: 1)),
+              builder: (context, snapshot) {
+                return Container(
+                  height: MediaQuery.of(context).size.height,
+                  alignment: Alignment.center,
+                  width: MediaQuery.of(context).size.width,
+                  decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [Color(0xFFfdd835), Color(0xFFf9b01e)])),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Form(
+                                child: Column(children: [
                               Container(
                                 padding: paddingContainerRow,
                                 child: Row(
@@ -309,31 +317,50 @@ class _GoldPageState extends State<GoldPage> {
                                         decoration: containerDecoration,
                                         padding: padding,
                                         margin: margin,
-                                        child: RichText(
-                                            text: TextSpan(
-                                                text:
-                                                    "Fine Gold(999)\nPrice(per gram):",
-                                                style: TextStyle(
-                                                    fontSize: kFontSize,
-                                                    color: Colors.white,
-                                                    fontFamily: "SF Pro Display")))),
+                                        child: Text(
+                                            "Fine Gold(999)\nPrice(per gram):",
+                                            style: TextStyle(
+                                              fontSize: kFontSize,
+                                              color: Colors.white,
+                                            ))),
                                     Container(
                                       decoration: containerDecoration,
                                       height: inputFieldHeight,
                                       width: inputFieldWidth,
-                                      child: TextField(
+                                      child: TextFormField(
                                           controller: textEditingController,
                                           onChanged: (value) {
-                                            setState(() {
-                                              if (value == "") {
-                                                value = "0";
-                                              }
-                                              fineGoldPrice = int.parse(value);
-                                              updateValues();
-                                            });
+                                            int? tryfineGoldPrice =
+                                                int.tryParse(value);
+                                            if (tryfineGoldPrice != null) {
+                                              setState(() {
+                                                if (value == "" ||
+                                                    (value[0] == '-' ||
+                                                        value[0] == '+')) {
+                                                  value = "0";
+                                                }
+                                                fineGoldPrice =
+                                                    int.parse(value);
+                                                updateValues();
+                                              });
+                                            } else {
+                                              setState(() {
+                                                fineGoldPrice = 0;
+                                                updateValues();
+                                                if (value.isNotEmpty) {
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(SnackBar(
+                                                    duration: snackBarDuration,
+                                                    content: const Text(
+                                                        "Please enter a valid whole number."),
+                                                  ));
+                                                }
+                                              });
+                                            }
                                           },
                                           textAlign: TextAlign.center,
                                           keyboardType: TextInputType.number,
+                                          textInputAction: TextInputAction.next,
                                           style: const TextStyle(
                                             color: Colors.white,
                                             fontSize: 20,
@@ -366,23 +393,43 @@ class _GoldPageState extends State<GoldPage> {
                                       decoration: containerDecoration,
                                       height: inputFieldHeight,
                                       width: inputFieldWidth,
-                                      child: TextField(
+                                      child: TextFormField(
                                         controller: weightFieldController,
                                         onChanged: (value) => {
-                                          setState(() {
-                                            if (value == "") {
-                                              value = "0.0";
+                                          if (double.tryParse(value) != null)
+                                            {
+                                              setState(() {
+                                                if (value == "") {
+                                                  value = "0.0";
+                                                }
+                                                if (value[0] == '.') {
+                                                  value = "0" + value;
+                                                }
+                                                weightInGrams =
+                                                    double.parse(value);
+                                                updateValues();
+                                              })
                                             }
-                                            if (value[0] == '.') {
-                                              value = "0" + value;
+                                          else
+                                            {
+                                              setState(() {
+                                                weightInGrams = 0.0;
+                                                updateValues();
+                                                if (value.isNotEmpty) {
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(SnackBar(
+                                                    duration: snackBarDuration,
+                                                    content: const Text(
+                                                        "Please enter a valid value"),
+                                                  ));
+                                                }
+                                              })
                                             }
-                                            weightInGrams = double.parse(value);
-                                            updateValues();
-                                          })
                                         },
                                         decoration: _decorationWeight,
                                         cursorColor: _cursorColor,
                                         keyboardType: TextInputType.number,
+                                        textInputAction: TextInputAction.next,
                                         textAlign: TextAlign.center,
                                         style: const TextStyle(
                                           color: Colors.white,
@@ -414,18 +461,38 @@ class _GoldPageState extends State<GoldPage> {
                                       // margin: EdgeInsets.only(top: 20),
                                       height: inputFieldHeight,
                                       width: inputFieldWidth,
-                                      child: TextField(
+                                      child: TextFormField(
                                           controller: purityController,
                                           onChanged: (value) {
-                                            if (value == "") {
-                                              purity = 0;
+                                            if (double.tryParse(value) !=
+                                                null) {
+                                              setState(() {
+                                                if (value == "") {
+                                                  purity = 0;
+                                                } else {
+                                                  purity = double.parse(value);
+                                                }
+                                                updateValues();
+                                              });
                                             } else {
-                                              purity = double.parse(value);
+                                              setState(() {
+                                                purity = 0.0;
+
+                                                updateValues();
+                                                if (value.isNotEmpty) {
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(SnackBar(
+                                                    duration: snackBarDuration,
+                                                    content: const Text(
+                                                        "Please enter a valid value"),
+                                                  ));
+                                                }
+                                              });
                                             }
-                                            updateValues();
                                           },
                                           keyboardType: TextInputType.number,
                                           cursorColor: _cursorColor,
+                                          textInputAction: TextInputAction.next,
                                           textAlign: TextAlign.center,
                                           style: const TextStyle(
                                             color: Colors.white,
@@ -457,16 +524,30 @@ class _GoldPageState extends State<GoldPage> {
                                       // margin: EdgeInsets.only(top: 20),
                                       height: inputFieldHeight,
                                       width: inputFieldWidth,
-                                      child: TextField(
+                                      child: TextFormField(
                                           controller: makingController,
                                           onChanged: (value) {
-                                            if (value == "" || value == ",") {
-                                              value = "0.0";
-                                              making = 0.0;
+                                            if (double.tryParse(value) !=
+                                                null) {
+                                              if (value == "") {
+                                                value = "0.0";
+                                                making = 0.0;
+                                              } else {
+                                                making = double.parse(value);
+                                              }
+                                              updateValues();
                                             } else {
-                                              making = double.parse(value);
+                                              making = 0.0;
+                                              updateValues();
+                                              if (value.isNotEmpty) {
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(SnackBar(
+                                                  duration: snackBarDuration,
+                                                  content: const Text(
+                                                      "Please enter a valid value"),
+                                                ));
+                                              }
                                             }
-                                            updateValues();
                                           },
                                           keyboardType: TextInputType.number,
                                           cursorColor: _cursorColor,
@@ -480,237 +561,235 @@ class _GoldPageState extends State<GoldPage> {
                                   ],
                                 ),
                               ),
-                              Container(
-                                padding: paddingContainerRow,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      alignment: Alignment.center,
-                                      height: containerHeight,
-                                      width: containerWidth,
-                                      padding: padding,
-                                      margin: margin,
-                                      decoration: containerDecoration,
-                                      child: Text(
-                                        "Base Amount:",
-                                        style: TextStyle(
-                                            fontSize: kFontSize + 2,
-                                            color: kColorWhite),
-                                      ),
+                            ])),
+                            Container(
+                              padding: paddingContainerRow,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    alignment: Alignment.center,
+                                    height: containerHeight,
+                                    width: containerWidth,
+                                    padding: padding,
+                                    margin: margin,
+                                    decoration: containerDecoration,
+                                    child: Text(
+                                      "Base Amount:",
+                                      style: TextStyle(
+                                          fontSize: kFontSize + 2,
+                                          color: kColorWhite),
                                     ),
-                                    Container(
-                                        height: inputFieldHeight,
-                                        width: inputFieldWidth,
-                                        decoration: containerDecoration,
-                                        alignment: Alignment.center,
-                                        child: Text(
-                                          baseAmount,
-                                          style: TextStyle(
-                                              fontSize: 20, color: kColorWhite),
-                                        ))
-                                  ],
-                                ),
-                              ),
-                              Container(
-                                padding: paddingContainerRow,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      alignment: Alignment.center,
-                                      height: containerHeight,
-                                      width: containerWidth,
-                                      padding: padding,
-                                      margin: margin,
-                                      decoration: containerDecoration,
-                                      child: Text(
-                                        "Making Amount:",
-                                        style: TextStyle(
-                                            fontSize: kFontSize + 1,
-                                            color: kColorWhite),
-                                      ),
-                                    ),
-                                    Container(
-                                        height: inputFieldHeight,
-                                        width: inputFieldWidth,
-                                        decoration: containerDecoration,
-                                        alignment: Alignment.center,
-                                        child: Text(
-                                          makingAmt,
-                                          style: TextStyle(
-                                              fontSize: 20, color: kColorWhite),
-                                        ))
-                                  ],
-                                ),
-                              ),
-                              Container(
-                                padding: paddingContainerRow,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      alignment: Alignment.center,
-                                      height: containerHeight,
-                                      width: containerWidth,
-                                      padding: padding,
-                                      margin: margin,
-                                      decoration: containerDecoration,
-                                      child: Text(
-                                        "GST:",
-                                        style: TextStyle(
-                                            fontSize: kFontSize + 1,
-                                            color: kColorWhite),
-                                      ),
-                                    ),
-                                    SizedBox(
+                                  ),
+                                  Container(
+                                      height: inputFieldHeight,
                                       width: inputFieldWidth,
-                                      height: inputFieldHeight + 40,
-                                      child: Column(
-                                        children: <Widget>[
-                                          ListTile(
-                                            visualDensity:
-                                                const VisualDensity(
-                                                    vertical: VisualDensity
-                                                        .minimumDensity,
-                                                    horizontal: VisualDensity
-                                                        .minimumDensity),
-                                            title: const Text("Applicable",
-                                                style:
-                                                    TextStyle(fontSize: 12)),
-                                            leading: Radio<GSTOptions>(
-                                              activeColor: kColorRed,
-                                              splashRadius: 2,
-                                              value: GSTOptions.applicable,
-                                              groupValue: gstApplicableOrNot,
-                                              onChanged: (GSTOptions? value) {
-                                                setState(() {
-                                                  gstApplicableOrNot = value!;
-                                                  updateValues();
-                                                });
-                                              },
-                                            ),
-                                          ),
-                                          ListTile(
-                                            visualDensity:
-                                                const VisualDensity(
-                                                    vertical: VisualDensity
-                                                        .minimumDensity,
-                                                    horizontal: VisualDensity
-                                                        .minimumDensity),
-                                            title: const Text(
-                                              "Not Applicable",
-                                              style: TextStyle(fontSize: 12),
-                                            ),
-                                            leading: Radio<GSTOptions>(
-                                              activeColor: kColorRed,
-                                              value: GSTOptions.notApplicable,
-                                              groupValue: gstApplicableOrNot,
-                                              onChanged: (GSTOptions? value) {
-                                                setState(() {
-                                                  gstApplicableOrNot = value!;
-                                                  updateValues();
-                                                });
-                                              },
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ),
-                              Container(
-                                padding: paddingContainerRow,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      alignment: Alignment.center,
-                                      height: containerHeight,
-                                      width: containerWidth,
-                                      padding: padding,
-                                      margin: margin,
                                       decoration: containerDecoration,
-                                      child: Text(
-                                        "GST Amount: ",
-                                        style: TextStyle(
-                                            fontSize: kFontSize + 2,
-                                            color: kColorWhite),
-                                      ),
-                                    ),
-                                    Container(
-                                        height: inputFieldHeight,
-                                        width: inputFieldWidth,
-                                        decoration: containerDecoration,
-                                        alignment: Alignment.center,
-                                        child: Text(
-                                          gstAmount,
-                                          style: TextStyle(
-                                              fontSize: 20, color: kColorWhite),
-                                        ))
-                                  ],
-                                ),
-                              ),
-                              Container(
-                                padding: paddingContainerRow,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Container(
                                       alignment: Alignment.center,
-                                      height: containerHeight,
-                                      width: containerWidth,
-                                      padding: padding,
-                                      margin: margin,
-                                      decoration: containerDecoration,
                                       child: Text(
-                                        "Total Price: ",
+                                        baseAmount,
                                         style: TextStyle(
-                                            fontSize: kFontSize + 2,
-                                            color: kColorWhite),
-                                      ),
-                                    ),
-                                    Container(
-                                        height: inputFieldHeight,
-                                        width: inputFieldWidth,
-                                        decoration: containerDecoration,
-                                        alignment: Alignment.center,
-                                        child: Text(
-                                          totalPrice,
-                                          style: TextStyle(
-                                              fontSize: 20, color: kColorWhite),
-                                        ))
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(top: 20, bottom: 5),
-                            padding: const EdgeInsets.all(0),
-                            decoration: containerDecoration,
-                            child: TextButton(
-                              onPressed: () {
-                                resetVals();
-                              },
-                              child: Text(
-                                "RESET VALUES",
-                                style: TextStyle(color: kColorWhite),
+                                            fontSize: 20, color: kColorWhite),
+                                      ))
+                                ],
                               ),
                             ),
+                            Container(
+                              padding: paddingContainerRow,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    alignment: Alignment.center,
+                                    height: containerHeight,
+                                    width: containerWidth,
+                                    padding: padding,
+                                    margin: margin,
+                                    decoration: containerDecoration,
+                                    child: Text(
+                                      "Making Amount:",
+                                      style: TextStyle(
+                                          fontSize: kFontSize + 1,
+                                          color: kColorWhite),
+                                    ),
+                                  ),
+                                  Container(
+                                      height: inputFieldHeight,
+                                      width: inputFieldWidth,
+                                      decoration: containerDecoration,
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        makingAmt,
+                                        style: TextStyle(
+                                            fontSize: 20, color: kColorWhite),
+                                      ))
+                                ],
+                              ),
+                            ),
+                            Container(
+                              padding: paddingContainerRow,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    alignment: Alignment.center,
+                                    height: containerHeight,
+                                    width: containerWidth,
+                                    padding: padding,
+                                    margin: margin,
+                                    decoration: containerDecoration,
+                                    child: Text(
+                                      "GST:",
+                                      style: TextStyle(
+                                          fontSize: kFontSize + 1,
+                                          color: kColorWhite),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: inputFieldWidth,
+                                    height: inputFieldHeight + 40,
+                                    child: Column(
+                                      children: <Widget>[
+                                        ListTile(
+                                          visualDensity: const VisualDensity(
+                                              vertical:
+                                                  VisualDensity.minimumDensity,
+                                              horizontal:
+                                                  VisualDensity.minimumDensity),
+                                          title: const Text("Applicable",
+                                              style: TextStyle(fontSize: 12)),
+                                          leading: Radio<GSTOptions>(
+                                            activeColor: kColorRed,
+                                            splashRadius: 2,
+                                            value: GSTOptions.applicable,
+                                            groupValue: gstApplicableOrNot,
+                                            onChanged: (GSTOptions? value) {
+                                              setState(() {
+                                                gstApplicableOrNot = value!;
+                                                updateValues();
+                                              });
+                                            },
+                                          ),
+                                        ),
+                                        ListTile(
+                                          visualDensity: const VisualDensity(
+                                              vertical:
+                                                  VisualDensity.minimumDensity,
+                                              horizontal:
+                                                  VisualDensity.minimumDensity),
+                                          title: const Text(
+                                            "Not Applicable",
+                                            style: TextStyle(fontSize: 12),
+                                          ),
+                                          leading: Radio<GSTOptions>(
+                                            activeColor: kColorRed,
+                                            value: GSTOptions.notApplicable,
+                                            groupValue: gstApplicableOrNot,
+                                            onChanged: (GSTOptions? value) {
+                                              setState(() {
+                                                gstApplicableOrNot = value!;
+                                                updateValues();
+                                              });
+                                            },
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                            Container(
+                              padding: paddingContainerRow,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    alignment: Alignment.center,
+                                    height: containerHeight,
+                                    width: containerWidth,
+                                    padding: padding,
+                                    margin: margin,
+                                    decoration: containerDecoration,
+                                    child: Text(
+                                      "GST Amount: ",
+                                      style: TextStyle(
+                                          fontSize: kFontSize + 2,
+                                          color: kColorWhite),
+                                    ),
+                                  ),
+                                  Container(
+                                      height: inputFieldHeight,
+                                      width: inputFieldWidth,
+                                      decoration: containerDecoration,
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        gstAmount,
+                                        style: TextStyle(
+                                            fontSize: 20, color: kColorWhite),
+                                      ))
+                                ],
+                              ),
+                            ),
+                            Container(
+                              padding: paddingContainerRow,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    alignment: Alignment.center,
+                                    height: containerHeight,
+                                    width: containerWidth,
+                                    padding: padding,
+                                    margin: margin,
+                                    decoration: containerDecoration,
+                                    child: Text(
+                                      "Total Price: ",
+                                      style: TextStyle(
+                                          fontSize: kFontSize + 2,
+                                          color: kColorWhite),
+                                    ),
+                                  ),
+                                  Container(
+                                      height: inputFieldHeight,
+                                      width: inputFieldWidth,
+                                      decoration: containerDecoration,
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        totalPrice,
+                                        style: TextStyle(
+                                            fontSize: 20, color: kColorWhite),
+                                      ))
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(top: 20, bottom: 5),
+                          padding: const EdgeInsets.all(0),
+                          decoration: containerDecoration,
+                          child: TextButton(
+                            onPressed: () {
+                              resetVals();
+                            },
+                            child: Text(
+                              "RESET VALUES",
+                              style: TextStyle(color: kColorWhite),
+                            ),
                           ),
-                          Container(
-                            height: 10,
-                          )
-                        ],
-                      ),
+                        ),
+                        Container(
+                          height: 10,
+                        )
+                      ],
                     ),
-                  );
-                }),
-          ),
+                  ),
+                );
+              }),
         ),
-      );
+      ),
+    );
   }
 
   Future takeScreenshots(Uint8List bytes) async {
