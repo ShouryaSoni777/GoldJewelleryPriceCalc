@@ -58,7 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
         prefs.getBool('isFirstLaunch') ?? true; // Default is true
     if (isFirstLaunch) {
       authkey = authKeyGenerator();
-      referenceId = referenceIdGenerator();
+      referenceId = referenceIdGenerator() as int;
       await prefs.setBool('isFirstLaunch', false);
       await prefs.setInt('authkey', authkey);
       await prefs.setInt('referenceID', referenceId);

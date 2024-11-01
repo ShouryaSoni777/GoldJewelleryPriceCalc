@@ -5,11 +5,14 @@ import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+final userCollection = FirebaseFirestore.instance.collection('users');
+
 int authKeyGenerator() {
   Random random = Random();
   int min = 10000000;
   int max = 99999999;
   return min + random.nextInt(max - min + 1);
+
 }
 
 int referenceIdGenerator(){
@@ -31,7 +34,6 @@ class _AuthPageState extends State<AuthPage> {
   bool isAuthentic = false;
   final scaffoldkey = GlobalKey<ScaffoldState>();
   String authText = "";
-  final userCollection = FirebaseFirestore.instance.collection('users');
 
   authenticate(int val) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();

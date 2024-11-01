@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:date_format/date_format.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:path_provider/path_provider.dart';
@@ -26,7 +25,7 @@ class _SilverPageState extends State<SilverPage> {
   String df = formatDate(DateTime.now().toLocal(), [dd, '-', mm, '-', yyyy]);
   String time = DateFormat('hh:mm').format(DateTime.now());
   Timer? timer;
-  TextEditingController textEditingController = TextEditingController();
+  TextEditingController silverController = TextEditingController();
   TextEditingController weightFieldController = TextEditingController();
   TextEditingController purityController = TextEditingController();
   String textEditingControllerInput = "0";
@@ -37,11 +36,10 @@ class _SilverPageState extends State<SilverPage> {
   Color kColorWhite = Colors.white;
   final Color _cursorColor = Colors.black;
   ScreenshotController controller = ScreenshotController();
-  int fineSilverPrice = 0;
+  int silverPrice = 0;
   double weightInGrams = 0.0;
-  double purity = 0.0;
+  double makingPerGram = 0.0;
   String totalPrice = "0";
-  double making = 0.0;
   TextEditingController makingController = TextEditingController();
   double kFontSize = 13;
   EdgeInsets padding = const EdgeInsets.all(05);
@@ -57,7 +55,8 @@ class _SilverPageState extends State<SilverPage> {
   String gstAmount = "0";
   GSTOptions gstApplicableOrNot = GSTOptions.applicable;
   double gst = 3 / 100;
-  
+  late bool showTextInputActionNext = true;
+  late TextInputAction textInputAction = TextInputAction.next;
 
   BoxDecoration containerDecoration = BoxDecoration(
       color: const Color(0xFF002147), borderRadius: BorderRadius.circular(10));
@@ -84,17 +83,6 @@ class _SilverPageState extends State<SilverPage> {
           borderSide: const BorderSide(color: Color(0xFF002147)),
           borderRadius: BorderRadius.circular(10)));
 
-  final InputDecoration _decorationPurity = InputDecoration(
-      focusedBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: Color(0xFF002147)),
-          borderRadius: BorderRadius.circular(10)),
-      hintText: "Purity",
-      hintStyle:
-          const TextStyle(color: Colors.white38, fontWeight: FontWeight.w200),
-      border: OutlineInputBorder(
-          borderSide: const BorderSide(color: Color(0xFF002147)),
-          borderRadius: BorderRadius.circular(10)));
-
   final InputDecoration _makingDecoration = InputDecoration(
       focusedBorder: OutlineInputBorder(
           borderSide: const BorderSide(color: Color(0xFF002147)),
@@ -105,7 +93,6 @@ class _SilverPageState extends State<SilverPage> {
       border: OutlineInputBorder(
           borderSide: const BorderSide(color: Color(0xFF002147)),
           borderRadius: BorderRadius.circular(10)));
-
 
   updateTime() {
     setState(() {
@@ -135,12 +122,10 @@ class _SilverPageState extends State<SilverPage> {
   }
 
   List<int> calculatePrice(
-      int silverFinePrice, double weight, double purity, double making) {
-    double silverFinePricePerGram = silverFinePrice / 1000;
-    double wastage = making / 100;
-    int makingCost = ((weight * wastage) * silverFinePricePerGram).toInt();
-    int basePrice =
-        (((purity / 100) * silverFinePricePerGram) * weight).toInt();
+      int silverPrice, double weightInGrams, double makingPerGram) {
+    double silverPricePerGram = silverPrice / 1000;
+    int makingCost = (makingPerGram * weightInGrams).toInt();
+    int basePrice = (silverPricePerGram * weightInGrams).toInt();
     int finalPrice = basePrice + makingCost;
     int gstAmt = (gst * finalPrice).toInt();
     if (gstApplicableOrNot == GSTOptions.applicable) {
@@ -158,23 +143,22 @@ class _SilverPageState extends State<SilverPage> {
     double pixelRatio = MediaQuery.of(context).devicePixelRatio;
     void updateValues() {
       setState(() {
-        if (textEditingController.text.isEmpty) {
+        if (silverController.text.isEmpty) {
           textEditingControllerInput = "0";
         }
-        if (textEditingController.text.isNotEmpty) {
-          textEditingControllerInput = textEditingController.text;
+        if (silverController.text.isNotEmpty) {
+          textEditingControllerInput = silverController.text;
         }
-        if (purity > 0.0 &&
-            weightInGrams > 0.0 &&
-            fineSilverPrice > 0 &&
-            making >= 0) {
+        if (weightInGrams > 0.0 && silverPrice > 0 && makingPerGram >= 0) {
+          textInputAction = TextInputAction.done;
           List<int> priceList =
-              calculatePrice(fineSilverPrice, weightInGrams, purity, making);
+              calculatePrice(silverPrice, weightInGrams, makingPerGram);
           baseAmount = priceList[0].toString();
           makingAmt = priceList[1].toString();
           totalPrice = priceList[2].toString();
           gstAmount = priceList[3].toString();
         } else {
+          textInputAction = TextInputAction.next;
           totalPrice = "0";
           baseAmount = "0";
           makingAmt = "0";
@@ -185,12 +169,11 @@ class _SilverPageState extends State<SilverPage> {
 
     void resetVals() {
       setState(() {
+          textInputAction = TextInputAction.next;
         weightFieldController.clear();
         weightInGrams = 0.0;
-        purityController.clear();
-        purity = 0.0;
         makingController.clear();
-        making = 0.0;
+        makingPerGram = 0.0;
         totalPrice = "0";
         baseAmount = "0";
         makingAmt = "0";
@@ -306,8 +289,7 @@ class _SilverPageState extends State<SilverPage> {
                                         decoration: containerDecoration,
                                         padding: padding,
                                         margin: margin,
-                                        child: Text(
-                                            "Fine Silver(999)\nPrice per KG: ",
+                                        child: Text("Silver Price per\nKG: ",
                                             style: TextStyle(
                                                 color: kColorWhite,
                                                 fontSize: kFontSize))),
@@ -317,29 +299,28 @@ class _SilverPageState extends State<SilverPage> {
                                       width: inputFieldWidth,
                                       child: TextFormField(
                                           cursorOpacityAnimates: true,
-                                          controller: textEditingController,
+                                          controller: silverController,
                                           onChanged: (value) {
-                                            int? tryfineSilverPrice =
+                                            int? trySilverPrice =
                                                 int.tryParse(value);
-                                            if (tryfineSilverPrice != null) {
+                                            if (trySilverPrice != null) {
                                               setState(() {
                                                 if (value == "" ||
                                                     (value[0] == '-' ||
                                                         value[0] == '+')) {
                                                   value = "0";
                                                 }
-                                                fineSilverPrice =
-                                                    int.parse(value);
+                                                silverPrice = int.parse(value);
                                                 updateValues();
                                               });
                                             } else {
                                               setState(() {
-                                                fineSilverPrice = 0;
+                                                silverPrice = 0;
                                                 updateValues();
                                                 if (value.isNotEmpty) {
                                                   ScaffoldMessenger.of(context)
-                                                      .showSnackBar(
-                                                          SnackBar(duration: snackBarDuration,
+                                                      .showSnackBar(SnackBar(
+                                                    duration: snackBarDuration,
                                                     content: const Text(
                                                         "Please enter a valid whole number."),
                                                   ));
@@ -353,7 +334,7 @@ class _SilverPageState extends State<SilverPage> {
                                             color: Colors.white,
                                             fontSize: 20,
                                           ),
-                                          textInputAction: TextInputAction.next,
+                                          textInputAction: textInputAction,
                                           cursorColor: _cursorColor,
                                           decoration: _decorationSilver),
                                     )
@@ -407,8 +388,8 @@ class _SilverPageState extends State<SilverPage> {
                                                 updateValues();
                                                 if (value.isNotEmpty) {
                                                   ScaffoldMessenger.of(context)
-                                                      .showSnackBar(
-                                                          SnackBar(duration: snackBarDuration,
+                                                      .showSnackBar(SnackBar(
+                                                    duration: snackBarDuration,
                                                     content: const Text(
                                                         "Please enter a valid value."),
                                                   ));
@@ -417,7 +398,7 @@ class _SilverPageState extends State<SilverPage> {
                                             }
                                         },
                                         decoration: _decorationWeight,
-                                        textInputAction: TextInputAction.next,
+                                        textInputAction: textInputAction,
                                         cursorColor: _cursorColor,
                                         keyboardType: TextInputType.number,
                                         textAlign: TextAlign.center,
@@ -442,70 +423,7 @@ class _SilverPageState extends State<SilverPage> {
                                         width: containerWidth,
                                         padding: padding,
                                         margin: margin,
-                                        child: Text("Purity\n(in percentage):",
-                                            style: TextStyle(
-                                                fontSize: kFontSize,
-                                                color: kColorWhite))),
-                                    Container(
-                                      decoration: containerDecoration,
-                                      // margin: EdgeInsets.only(top: 20),
-                                      height: inputFieldHeight,
-                                      width: inputFieldWidth,
-                                      child: TextFormField(
-                                          cursorOpacityAnimates: true,
-                                          controller: purityController,
-                                          onChanged: (value) {
-                                            if (double.tryParse(value) !=
-                                                null) {
-                                              setState(() {
-                                                if (value == "") {
-                                                  purity = 0;
-                                                } else {
-                                                  purity = double.parse(value);
-                                                }
-                                                updateValues();
-                                              });
-                                            } else {
-                                              setState(() {
-                                                purity = 0.0;
-                                                updateValues();
-                                                if (value.isNotEmpty) {
-                                                  ScaffoldMessenger.of(context)
-                                                      .showSnackBar(
-                                                          SnackBar(duration: snackBarDuration,
-                                                    content: const Text(
-                                                        "Please enter a valid value."),
-                                                  ));
-                                                }
-                                              });
-                                            }
-                                          },
-                                          keyboardType: TextInputType.number,
-                                          cursorColor: _cursorColor,
-                                          textInputAction: TextInputAction.next,
-                                          textAlign: TextAlign.center,
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 20,
-                                          ),
-                                          decoration: _decorationPurity),
-                                    )
-                                  ],
-                                ),
-                              ),
-                              Container(
-                                padding: paddingContainerRow,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                        decoration: containerDecoration,
-                                        alignment: Alignment.center,
-                                        height: containerHeight,
-                                        width: containerWidth,
-                                        padding: padding,
-                                        margin: margin,
-                                        child: Text("Making \n(in percentage):",
+                                        child: Text("Making per gram:",
                                             style: TextStyle(
                                                 fontSize: kFontSize,
                                                 color: kColorWhite))),
@@ -522,23 +440,23 @@ class _SilverPageState extends State<SilverPage> {
                                                 null) {
                                               if (value == "") {
                                                 value = "0.0";
-                                                making = 0.0;
+                                                makingPerGram = 0.0;
                                               } else {
-                                                making = double.parse(value);
+                                                makingPerGram =
+                                                    double.parse(value);
                                               }
                                               updateValues();
                                             } else {
-                                              
-                                              making = 0.0;
+                                              makingPerGram = 0.0;
                                               updateValues();
                                               if (value.isNotEmpty) {
-                                                  ScaffoldMessenger.of(context)
-                                                      .showSnackBar(
-                                                          SnackBar(duration: snackBarDuration,
-                                                    content: const Text(
-                                                        "Please enter a valid value."),
-                                                  ));
-                                                }
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(SnackBar(
+                                                  duration: snackBarDuration,
+                                                  content: const Text(
+                                                      "Please enter a valid value."),
+                                                ));
+                                              }
                                             }
                                           },
                                           keyboardType: TextInputType.number,
@@ -790,12 +708,8 @@ class _SilverPageState extends State<SilverPage> {
 
   Future takeScreenshots(Uint8List bytes) async {
     await [Permission.storage].request();
-    await ImageGallerySaver.saveImage(bytes, name: "price.png");
-
     final directory = await getExternalStorageDirectory();
-    // print("path${directory!.path}");
-    final image = io.File('${directory!.path}/price.png');
-    // print("image: ${image.path}");
+    final image = await io.File('${directory!.path}/price$df|$time|${DateTime.now().second}.png').create();
     image.writeAsBytesSync(bytes);
     // await FlutterShare.shareFile(title: "..", filePath: image.path);
     Share.shareXFiles(

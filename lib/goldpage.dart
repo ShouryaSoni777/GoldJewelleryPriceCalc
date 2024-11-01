@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:date_format/date_format.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:path_provider/path_provider.dart';
@@ -45,7 +44,6 @@ class _GoldPageState extends State<GoldPage> {
   EdgeInsets margin = const EdgeInsets.only(top: 0, right: 30, left: 10);
   EdgeInsets paddingContainerRow = const EdgeInsets.only(top: 18);
   final snackBarDuration = const Duration(milliseconds: 750);
-
   double containerHeight = 55.0;
   double containerWidth = 130.0;
   double inputFieldHeight = 55.0;
@@ -55,6 +53,8 @@ class _GoldPageState extends State<GoldPage> {
   String gstAmount = "0";
   GSTOptions gstApplicableOrNot = GSTOptions.applicable;
   double gst = 3 / 100;
+  late bool showTextInputActionNext = true;
+  late TextInputAction textInputAction = TextInputAction.next;
 
   BoxDecoration containerDecoration = BoxDecoration(
       color: const Color(0xFFc62828), borderRadius: BorderRadius.circular(10));
@@ -162,6 +162,7 @@ class _GoldPageState extends State<GoldPage> {
             weightInGrams > 0.0 &&
             fineGoldPrice > 0 &&
             making >= 0) {
+          textInputAction = TextInputAction.done;
           List<int> priceList =
               calculatePrice(fineGoldPrice, weightInGrams, purity, making);
           baseAmount = priceList[0].toString();
@@ -169,6 +170,7 @@ class _GoldPageState extends State<GoldPage> {
           totalPrice = priceList[2].toString();
           gstAmount = priceList[3].toString();
         } else {
+          textInputAction = TextInputAction.next;
           totalPrice = "0";
           baseAmount = "0";
           makingAmt = "0";
@@ -179,6 +181,7 @@ class _GoldPageState extends State<GoldPage> {
 
     void resetVals() {
       setState(() {
+        textInputAction = TextInputAction.next;
         weightFieldController.clear();
         weightInGrams = 0.0;
         purityController.clear();
@@ -360,7 +363,7 @@ class _GoldPageState extends State<GoldPage> {
                                           },
                                           textAlign: TextAlign.center,
                                           keyboardType: TextInputType.number,
-                                          textInputAction: TextInputAction.next,
+                                          textInputAction: textInputAction,
                                           style: const TextStyle(
                                             color: Colors.white,
                                             fontSize: 20,
@@ -429,7 +432,7 @@ class _GoldPageState extends State<GoldPage> {
                                         decoration: _decorationWeight,
                                         cursorColor: _cursorColor,
                                         keyboardType: TextInputType.number,
-                                        textInputAction: TextInputAction.next,
+                                        textInputAction: textInputAction,
                                         textAlign: TextAlign.center,
                                         style: const TextStyle(
                                           color: Colors.white,
@@ -492,7 +495,7 @@ class _GoldPageState extends State<GoldPage> {
                                           },
                                           keyboardType: TextInputType.number,
                                           cursorColor: _cursorColor,
-                                          textInputAction: TextInputAction.next,
+                                          textInputAction: textInputAction,
                                           textAlign: TextAlign.center,
                                           style: const TextStyle(
                                             color: Colors.white,
@@ -794,12 +797,10 @@ class _GoldPageState extends State<GoldPage> {
 
   Future takeScreenshots(Uint8List bytes) async {
     await [Permission.storage].request();
-    await ImageGallerySaver.saveImage(bytes, name: "price.png");
-
     final directory = await getExternalStorageDirectory();
-    // print("path${directory!.path}");
-    final image = io.File('${directory!.path}/price.png');
-    // print("image: ${image.path}");
+    final image = await io.File(
+            '${directory!.path}/price$df|$time|${DateTime.now().second}.png')
+        .create();
     image.writeAsBytesSync(bytes);
     // await FlutterShare.shareFile(title: "..", filePath: image.path);
     Share.shareXFiles(
