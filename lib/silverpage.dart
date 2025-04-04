@@ -65,7 +65,7 @@ class _SilverPageState extends State<SilverPage> {
       focusedBorder: OutlineInputBorder(
           borderSide: const BorderSide(color: Color(0xFF002147)),
           borderRadius: BorderRadius.circular(10)),
-      hintText: "Fine Silver(999)",
+      hintText: "Silver Price per KG",
       hintStyle:
           const TextStyle(color: Colors.white38, fontWeight: FontWeight.w200),
       border: OutlineInputBorder(
